@@ -1,0 +1,1 @@
+from app.reviews import reviews_bp
