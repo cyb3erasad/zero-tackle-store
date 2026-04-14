@@ -46,7 +46,13 @@ def create_app(config_name=None):
     from app.cart import cart_bp
     app.register_blueprint(cart_bp, url_prefix='/cart')
 
+    from app.orders import orders_bp
+    app.register_blueprint(orders_bp, url_prefix='/orders')
+
     from app.reviews import reviews_bp
     app.register_blueprint(reviews_bp, url_prefix='/reviews')
+
+    from app.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     return app
