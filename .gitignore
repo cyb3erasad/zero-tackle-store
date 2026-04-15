@@ -1,0 +1,11 @@
+.env
+__pycache__/
+app/__pycache__/
+app/admin/__pycache__/
+app/auth/__pycache__/
+app/cart/__pycache__/
+app/orders/__pycache__/
+app/products/__pycache__/
+app/reviews/__pycache__/
+migrations/
+vnv/
