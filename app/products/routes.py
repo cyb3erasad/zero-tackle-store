@@ -63,3 +63,23 @@ def search():
         query=query,
         results=results
     )
+
+
+# ======================================================================
+# PRODUCT DETAIL
+# ======================================================================
+
+@products_bp.route('/<int:product_id>')
+def detail(product_id):
+    """
+    Product detail page.
+    Shows: images, full name, price, description,
+           sizes (if has_sizes), size chart, reviews, add to cart.
+    """
+    product = Product.query.get_or_404(product_id)
+    reviews = product.reviews
+    return render_template(
+        'products/detail.html',
+        product=product,
+        reviews=reviews
+    )
