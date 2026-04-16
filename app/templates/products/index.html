@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Football Store — Home{% endblock %}
+
+{% block content %}
+
+<!-- ================================================================
+     HERO SECTION
+================================================================ -->
+<div class="p-5 mb-4 rounded-4 text-white text-center"
+     style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+    <div class="py-3">
+        <h1 class="display-5 fw-bold">
+            <i class="bi bi-dribbble"></i> Football Store
+        </h1>
+        <p class="lead mb-4">
+            Top quality jerseys, footballs, shorts & accessories
+        </p>
+        <form class="d-flex justify-content-center" action="{{ url_for('products.search') }}" method="GET">
+            <div class="input-group" style="max-width: 480px;">
+                <input
+                    type="search"
+                    class="form-control form-control-lg"
+                    name="q"
+                    placeholder="Search products..."
+                />
+                <button class="btn btn-success btn-lg" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================================================================
+     CATEGORIES GRID
+================================================================ -->
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-grid-3x3-gap"></i> Shop by Category
+</h2>
+
+{% if categories %}
+<div class="row g-4">
+    {% for cat in categories %}
+    <div class="col-6 col-md-3">
+        <a
+            href="{{ url_for('products.category', slug=cat.slug) }}"
+            class="text-decoration-none"
+        >
+            <div class="card border-0 shadow-sm h-100 text-center
+                        category-card overflow-hidden">
+
+                <!-- Category image -->
+                {% if cat.image_filename %}
+                <img
+                    src="{{ url_for('static', filename='images/categories/' + cat.image_filename) }}"
+                    class="card-img-top"
+                    alt="{{ cat.name }}"
+                    style="height: 200px; object-fit: cover;"
+                />
+                {% else %}
+                <div class="bg-secondary d-flex align-items-center
+                            justify-content-center"
+                     style="height: 200px;">
+                    <i class="bi bi-image text-white fs-1"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        {{ cat.name }}
+                    </h5>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<!-- No categories yet -->
+<div class="text-center py-5">
+    <i class="bi bi-box-seam fs-1 text-muted"></i>
+    <p class="text-muted mt-3">
+        No categories yet. Admin can add them from the panel.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+    .category-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
+    }
+</style>
+{% endblock %}
