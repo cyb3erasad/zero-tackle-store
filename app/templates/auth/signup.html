@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Create Account — Football Store{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-body p-4">
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill fs-1 text-success"></i>
+                    <h3 class="fw-bold mt-2">Create Account</h3>
+                    <p class="text-muted small">Join Football Store today</p>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="{{ url_for('auth.signup') }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.username.label.text }}
+                        </label>
+                        {{ form.username(
+                        class="form-control" + (" is-invalid" if form.username.errors else ""),
+                        placeholder="e.g. john_doe"
+                        ) }}
+                        {% for error in form.username.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.email.label.text }}
+                        </label>
+                        {{ form.email(
+                        class="form-control" + (" is-invalid" if form.email.errors else ""),
+                        placeholder="you@example.com"
+                        ) }}
+                        {% for error in form.email.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.password.label.text }}
+                        </label>
+                        {{ form.password(
+                        class="form-control" + (" is-invalid" if form.password.errors else ""),
+                        placeholder="Min. 6 characters"
+                        ) }}
+                        {% for error in form.password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            {{ form.confirm_password.label.text }}
+                        </label>
+                        {{ form.confirm_password(
+                        class="form-control" + (" is-invalid" if form.confirm_password.errors else ""),
+                        placeholder="Re-enter password"
+                        ) }}
+                        {% for error in form.confirm_password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Submit -->
+                    {{ form.submit(class="btn btn-success w-100 py-2 fw-semibold") }}
+                </form>
+
+                <!-- Login link -->
+                <p class="text-center text-muted mt-3 mb-0 small">
+                    Already have an account?
+                    <a href="{{ url_for('auth.login') }}" class="text-success fw-semibold">
+                        Log In
+                    </a>
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
