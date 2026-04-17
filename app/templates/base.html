@@ -77,7 +77,7 @@
 
                         <!-- Cart icon — active after Step 6 -->
                         <li class="nav-item">
-                            <a class="nav-link position-relative" href="#">
+                            <a class="nav-link position-relative" href="{{ url_for('cart.view_cart') }}">
                                 <i class="bi bi-cart3 fs-5"></i>
                                 {% if current_user.cart and current_user.cart.item_count > 0 %}
                                 <span class="position-absolute top-0 start-100 translate-middle
@@ -90,7 +90,7 @@
 
                         <!-- My Orders — active after Step 7 -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ url_for('orders.my_orders') }}">
                                 <i class="bi bi-bag-check"></i> My Orders
                             </a>
                         </li>

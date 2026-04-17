@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — Football Store{% endblock %}
+
+{% block content %}
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-bag-check"></i> Checkout
+</h2>
+
+<form method="POST" action="{{ url_for('orders.checkout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+<div class="row g-4">
+
+    <!-- ================================================================
+         LEFT — Shipping Information
+    ================================================================ -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <!-- Section header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <span class="badge bg-dark rounded-circle d-flex align-items-center
+                                 justify-content-center"
+                          style="width:32px; height:32px; font-size:1rem;">1</span>
+                    <h5 class="fw-bold mb-0">Shipping Information</h5>
+                </div>
+
+                <!-- First + Last name -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            First Name <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="first_name"
+                            class="form-control form-control-lg"
+                            placeholder="Jane"
+                            value="{{ current_user.username }}"
+                            required
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            Last Name <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            class="form-control form-control-lg"
+                            placeholder="Austen"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <!-- Country -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase
+                                  text-muted">
+                        Country / Region <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="country"
+                        class="form-control form-control-lg"
+                        placeholder="Pakistan"
+                        value="Pakistan"
+                        required
+                    />
+                </div>
+
+                <!-- Street address -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase
+                                  text-muted">
+                        Street Address <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="street"
+                        class="form-control form-control-lg mb-2"
+                        placeholder="House number and street name"
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="apartment"
+                        class="form-control form-control-lg"
+                        placeholder="Apartment, suite, unit, etc. (optional)"
+                    />
+                </div>
+
+                <!-- City + State -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            Town / City <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="city"
+                            class="form-control form-control-lg"
+                            placeholder="Karachi"
+                            required
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            State / Province <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="state"
+                            class="form-control form-control-lg"
+                            placeholder="Sindh"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <!-- Phone + Email -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            Phone Number <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            class="form-control form-control-lg"
+                            placeholder="+92 3XX XXXXXXX"
+                            required
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-uppercase
+                                      text-muted">
+                            Email Address <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control form-control-lg"
+                            placeholder="you@example.com"
+                            value="{{ current_user.email }}"
+                            required
+                        />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         RIGHT — Order Summary
+    ================================================================ -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-4">Order Summary</h5>
+
+                <!-- Cart items -->
+                {% for item in cart.items %}
+                <div class="d-flex align-items-center gap-3 mb-3">
+
+                    <!-- Thumbnail -->
+                    <div class="position-relative flex-shrink-0">
+                        {% if item.product.primary_image %}
+                        <img
+                            src="{{ url_for('static', filename='images/products/' + item.product.primary_image) }}"
+                            alt="{{ item.product.name }}"
+                            class="rounded-2"
+                            style="width:60px; height:60px; object-fit:cover;"
+                        />
+                        {% else %}
+                        <div class="bg-light rounded-2 d-flex align-items-center
+                                    justify-content-center"
+                             style="width:60px; height:60px;">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <!-- Quantity badge -->
+                        <span class="position-absolute top-0 start-100
+                                     translate-middle badge rounded-pill bg-dark"
+                              style="font-size:0.7rem;">
+                            {{ item.quantity }}
+                        </span>
+                    </div>
+
+                    <!-- Name + size -->
+                    <div class="flex-grow-1">
+                        <p class="mb-0 fw-semibold small">{{ item.product.name }}</p>
+                        {% if item.size_label %}
+                        <p class="mb-0 text-muted" style="font-size:0.78rem;">
+                            Size: {{ item.size_label }}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Line total -->
+                    <span class="fw-semibold text-success small">
+                        Rs {{ "{:,.0f}".format(item.line_total) }}
+                    </span>
+                </div>
+                {% endfor %}
+
+                <hr/>
+
+                <!-- Subtotal -->
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-semibold">
+                        Rs {{ "{:,.0f}".format(subtotal) }}
+                    </span>
+                </div>
+
+                <!-- Shipping / COD fee -->
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Shipping Fee</span>
+                    <span class="fw-semibold text-success">
+                        Rs {{ "{:,.0f}".format(cod_fee) }}
+                    </span>
+                </div>
+
+                <!-- Total -->
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold fs-5">Total</span>
+                    <span class="fw-bold fs-5">
+                        Rs {{ "{:,.0f}".format(total) }}
+                    </span>
+                </div>
+
+                <!-- Payment method -->
+                <div class="d-flex align-items-center gap-3 p-3 bg-light
+                            rounded-3 mb-4">
+                    <i class="bi bi-truck fs-4 text-success"></i>
+                    <div>
+                        <p class="mb-0 fw-semibold small">PAYMENT METHOD</p>
+                        <p class="mb-0 text-muted small">Cash on Delivery (COD)</p>
+                    </div>
+                </div>
+
+                <!-- Confirm order button -->
+                <button type="submit" class="btn btn-dark w-100 py-3 fw-semibold fs-5">
+                    <i class="bi bi-lock-fill"></i> Confirm Order
+                </button>
+
+                <p class="text-center text-muted mt-3 mb-0 small">
+                    <i class="bi bi-shield-check"></i>
+                    SECURE CHECKOUT · PRIVACY PROTECTED
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</form>
+
+{% endblock %}
