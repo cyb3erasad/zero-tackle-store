@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% block title %}Your Cart — Football Store{% endblock %}
+
+{% block content %}
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-cart3"></i> Your Cart
+    {% if cart.items %}
+    <span class="badge bg-success ms-2 fs-6">
+        {{ cart.item_count }} item{{ 's' if cart.item_count != 1 }}
+    </span>
+    {% endif %}
+</h2>
+
+{% if cart.items %}
+
+<div class="row g-4">
+
+    <!-- ================================================================
+         LEFT — Cart Items
+    ================================================================ -->
+    <div class="col-lg-8">
+
+        {% for item in cart.items %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body p-3">
+                <div class="row align-items-center g-3">
+
+                    <!-- Product image -->
+                    <div class="col-3 col-md-2">
+                        {% if item.product.primary_image %}
+                        <img
+                            src="{{ url_for('static', filename='images/products/' + item.product.primary_image) }}"
+                            alt="{{ item.product.name }}"
+                            class="img-fluid rounded-2"
+                            style="height: 80px; width: 80px; object-fit: cover;"
+                        />
+                        {% else %}
+                        <div class="bg-light rounded-2 d-flex align-items-center
+                                    justify-content-center"
+                             style="height: 80px; width: 80px;">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Product name + size -->
+                    <div class="col-9 col-md-4">
+                        <a
+                            href="{{ url_for('products.detail', product_id=item.product.id) }}"
+                            class="fw-semibold text-dark text-decoration-none"
+                        >
+                            {{ item.product.name }}
+                        </a>
+                        {% if item.size_label %}
+                        <p class="text-muted small mb-0 mt-1">
+                            <i class="bi bi-tag"></i> Size: {{ item.size_label }}
+                        </p>
+                        {% endif %}
+                        <p class="text-success fw-semibold mb-0 mt-1">
+                            Rs {{ "{:,.0f}".format(item.product.price) }}
+                        </p>
+                    </div>
+
+                    <!-- Quantity control -->
+                    <div class="col-md-3">
+                        <form
+                            action="{{ url_for('cart.update_item', item_id=item.id) }}"
+                            method="POST"
+                            class="d-flex align-items-center gap-2"
+                        >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="input-group input-group-sm" style="width: 120px;">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="adjustQty(this, -1)"
+                                >
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    class="form-control text-center qty-input"
+                                    value="{{ item.quantity }}"
+                                    min="1"
+                                    max="10"
+                                    readonly
+                                />
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="adjustQty(this, 1)"
+                                >
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-success"
+                                title="Update"
+                            >
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Line total + remove -->
+                    <div class="col-md-3 text-md-end">
+                        <p class="fw-bold mb-1">
+                            Rs {{ "{:,.0f}".format(item.line_total) }}
+                        </p>
+                        <form
+                            action="{{ url_for('cart.remove_item', item_id=item.id) }}"
+                            method="POST"
+                        >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Remove this item?')"
+                            >
+                                <i class="bi bi-trash"></i> Remove
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Clear cart -->
+        <form action="{{ url_for('cart.clear_cart') }}" method="POST" class="mt-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button
+                type="submit"
+                class="btn btn-outline-danger btn-sm"
+                onclick="return confirm('Clear your entire cart?')"
+            >
+                <i class="bi bi-trash3"></i> Clear Cart
+            </button>
+        </form>
+
+    </div>
+
+    <!-- ================================================================
+         RIGHT — Order Summary
+    ================================================================ -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-4">Order Summary</h5>
+
+                <!-- Items breakdown -->
+                {% for item in cart.items %}
+                <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">
+                        {{ item.product.name }}
+                        {% if item.size_label %}({{ item.size_label }}){% endif %}
+                        × {{ item.quantity }}
+                    </span>
+                    <span>Rs {{ "{:,.0f}".format(item.line_total) }}</span>
+                </div>
+                {% endfor %}
+
+                <hr/>
+
+                <!-- Subtotal -->
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-semibold">
+                        Rs {{ "{:,.0f}".format(cart.subtotal) }}
+                    </span>
+                </div>
+
+                <!-- COD fee -->
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">
+                        Shipping (COD)
+                    </span>
+                    <span class="fw-semibold text-success">
+                        Rs {{ "{:,.0f}".format(cod_fee) }}
+                    </span>
+                </div>
+
+                <!-- Payment method -->
+                <div class="d-flex align-items-center gap-2 mb-3 mt-2
+                            p-2 bg-light rounded-2">
+                    <i class="bi bi-truck text-success fs-5"></i>
+                    <div>
+                        <p class="mb-0 small fw-semibold">Cash on Delivery</p>
+                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">
+                            Pay when you receive
+                        </p>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <!-- Total -->
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold fs-5">Total</span>
+                    <span class="fw-bold fs-5 text-success">
+                        Rs {{ "{:,.0f}".format(total) }}
+                    </span>
+                </div>
+
+                <!-- Checkout button -->
+                <a
+                    href="{{ url_for('orders.checkout') }}"
+                    class="btn btn-success w-100 py-3 fw-semibold"
+                >
+                    <i class="bi bi-lock-fill"></i> Proceed to Checkout
+                </a>
+
+                <!-- Continue shopping -->
+                <a
+                    href="{{ url_for('products.index') }}"
+                    class="btn btn-outline-secondary w-100 mt-2"
+                >
+                    <i class="bi bi-arrow-left"></i> Continue Shopping
+                </a>
+
+                <p class="text-center text-muted mt-3 mb-0"
+                   style="font-size: 0.75rem;">
+                    <i class="bi bi-shield-check"></i>
+                    Secure Checkout · Privacy Protected
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- Empty cart state -->
+<div class="text-center py-5">
+    <i class="bi bi-cart-x" style="font-size: 5rem; color: #dee2e6;"></i>
+    <h4 class="mt-4 fw-semibold text-muted">Your cart is empty</h4>
+    <p class="text-muted mb-4">
+        Looks like you haven't added anything yet.
+    </p>
+    <a href="{{ url_for('products.index') }}" class="btn btn-success btn-lg px-5">
+        <i class="bi bi-bag"></i> Start Shopping
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    function adjustQty(btn, delta) {
+        // Find the qty input within the same input-group
+        const group = btn.closest('.input-group');
+        const input = group.querySelector('.qty-input');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (val > 10) val = 10;
+        input.value = val;
+    }
+</script>
+{% endblock %}
