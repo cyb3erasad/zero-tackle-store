@@ -348,9 +348,26 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        <span class="text-muted small">
-                            {{ review.created_at.strftime('%b %d, %Y') }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">
+                                {{ review.created_at.strftime('%b %d, %Y') }}
+                            </span>
+                            {% if current_user.is_authenticated and
+                               (current_user.id == review.user_id or current_user.is_admin) %}
+                            <form action="{{ url_for('reviews.delete_review', review_id=review.id) }}"
+                                  method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button
+                                    type="submit"
+                                    class="btn btn-link btn-sm text-danger p-0 text-decoration-none"
+                                    onclick="return confirm('Delete this review?')"
+                                    title="Delete review"
+                                >
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                     {% if review.comment %}
                     <p class="mb-0 text-muted">{{ review.comment }}</p>
